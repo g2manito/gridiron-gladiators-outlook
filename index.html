@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0f172a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="GG Outlook" />
+<meta name="format-detection" content="telephone=no" />
+<title>Gridiron Gladiators Outlook</title>
+<style>
+:root{--bg:#0b1220;--panel:#111a2b;--panel2:#182337;--text:#f8fafc;--muted:#94a3b8;--line:#26344f;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--accent:#60a5fa;--accent2:#a78bfa;--shadow:0 10px 30px rgba(0,0,0,.28)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#08101e,#0b1220 30%,#0b1220);color:var(--text)}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 40px}.top{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(10px);padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand h1{font-size:1.25rem;margin:0}.sub{color:var(--muted);font-size:.86rem}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.select,.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:11px 12px;font-size:.95rem}.select{flex:1;min-width:180px}.btn{cursor:pointer;font-weight:700}.btn.primary{background:linear-gradient(135deg,#2563eb,#7c3aed);border:none}.btn:disabled{opacity:.55;cursor:not-allowed}
+.grid{display:grid;gap:12px}.grid4{grid-template-columns:repeat(4,1fr)}.grid2{grid-template-columns:repeat(2,1fr)}@media(max-width:760px){.grid4{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--panel),#0f1728);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}.hero{margin-top:16px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:.72rem;font-weight:800}.team-title{font-size:1.7rem;font-weight:850;margin:4px 0}.record{color:#cbd5e1}.metric{text-align:center}.metric .label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}.metric .value{font-size:2rem;font-weight:900;margin-top:5px}.metric .hint{font-size:.8rem;color:var(--muted);margin-top:2px}.section-title{font-size:1rem;margin:0 0 10px}.bar-row{display:grid;grid-template-columns:84px 1fr 56px;align-items:center;gap:8px;margin:9px 0}.bar{height:11px;background:#1f2a40;border-radius:999px;overflow:hidden}.bar>span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#8b5cf6);border-radius:999px}.small{font-size:.84rem;color:var(--muted)}.bigline{font-size:1.25rem;font-weight:800}.pill{display:inline-flex;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#0d1728;color:#dbeafe;font-size:.78rem;font-weight:750}.trend{display:flex;align-items:center;gap:8px;margin-top:8px}.up{color:var(--good)}.down{color:var(--bad)}.flat{color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}.num{text-align:right}.tabs{display:flex;gap:8px;overflow-x:auto;margin:14px 0}.tab{white-space:nowrap}.tab.active{background:#1d4ed8}.panel{display:none}.panel.active{display:block}.status{margin-top:12px;padding:10px 12px;border-radius:12px;background:#101a2b;border:1px solid var(--line);font-size:.84rem;color:#cbd5e1}.footer{color:var(--muted);font-size:.76rem;margin-top:18px;line-height:1.45}.spark{width:100%;height:90px}.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}.kv:last-child{border-bottom:none}.sharebox{white-space:pre-wrap;background:#0b1424;border:1px dashed var(--line);padding:12px;border-radius:12px;color:#dbeafe;font-size:.86rem}.danger{color:#fecaca}.good{color:#bbf7d0}.muted{color:var(--muted)}
+.compat{display:none;margin-top:12px;padding:12px 14px;border:1px solid #f59e0b;background:#2a210f;color:#fde68a;border-radius:14px;font-size:.86rem;line-height:1.45}
+.compat.show{display:block}
+.compat strong{color:#fff7d6}
+.ios-note{font-size:.78rem;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div>
+        <h1>Gridiron Gladiators Outlook</h1>
+        <div class="sub">Weekly probability snapshot • share-safe league view</div>
+      </div>
+      <div class="pill" id="weekBadge">Week —</div>
+    </div>
+    <div class="controls">
+      <select id="teamSelect" class="select" aria-label="Select team"><option>Loading teams…</option></select>
+      <button id="refreshBtn" class="btn primary">Refresh Outlook</button>
+      <button id="shareBtn" class="btn">Share Outlook</button>
+    </div>
+    <div id="compatBanner" class="compat">
+      <strong>iPhone / iPad:</strong> This outlook needs to be opened from an HTTPS web link.
+      iOS may block live Sleeper data when the HTML is opened directly from Messages, Mail, or the Files app.
+      Ask the sender for the hosted link, then open it in Safari. No special iPhone setting is required.
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="btn tab active" data-tab="outlook">Outlook</button>
+    <button class="btn tab" data-tab="schedule">Schedule</button>
+    <button class="btn tab" data-tab="league">League</button>
+    <button class="btn tab" data-tab="trend">Trend</button>
+    <button class="btn tab" data-tab="about">About</button>
+  </div>
+
+  <section id="outlook" class="panel active">
+    <div class="card hero">
+      <div class="eyebrow">Selected team</div>
+      <div id="teamName" class="team-title">—</div>
+      <div id="teamRecord" class="record">—</div>
+      <div id="statusLine" class="status">Loading current league state…</div>
+    </div>
+
+    <div class="grid grid4" style="margin-top:12px">
+      <div class="card metric"><div class="label">This Week P(Win)</div><div id="pWin" class="value">—</div><div id="oppLine" class="hint">vs —</div></div>
+      <div class="card metric"><div class="label">Make Playoffs</div><div id="pPlayoffs" class="value">—</div><div class="hint">season simulation</div></div>
+      <div class="card metric"><div class="label">Reach Final</div><div id="pFinal" class="value">—</div><div class="hint">playoff path</div></div>
+      <div class="card metric"><div class="label">Win League</div><div id="pTitle" class="value">—</div><div class="hint">championship equity</div></div>
+    </div>
+
+    <div class="grid grid2" style="margin-top:12px">
+      <div class="card">
+        <h3 class="section-title">Season Outlook</h3>
+        <div class="kv"><span class="muted">Expected finish</span><strong id="expectedSeed">—</strong></div>
+        <div class="kv"><span class="muted">Projected final record</span><strong id="projectedRecord">—</strong></div>
+        <div class="kv"><span class="muted">Remaining schedule</span><strong id="scheduleLabel">—</strong></div>
+        <div class="kv"><span class="muted">Injury uncertainty</span><strong id="injuryLabel">—</strong></div>
+        <div class="kv"><span class="muted">Outlook</span><strong id="outlookLabel">—</strong></div>
+      </div>
+      <div class="card">
+        <h3 class="section-title">Playoff Position</h3>
+        <div id="seedBars"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3 class="section-title">Outlook Drivers</h3>
+      <div id="drivers" class="small">—</div>
+    </div>
+  </section>
+
+  <section id="schedule" class="panel">
+    <div class="card">
+      <h3 class="section-title">Remaining Schedule</h3>
+      <div id="scheduleList" class="small">—</div>
+    </div>
+  </section>
+
+  <section id="league" class="panel">
+    <div class="card">
+      <h3 class="section-title">League Outlook</h3>
+      <div style="overflow:auto"><table><thead><tr><th>Team</th><th class="num">Record</th><th class="num">Playoff</th><th class="num">Champion</th></tr></thead><tbody id="leagueBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="trend" class="panel">
+    <div class="card">
+      <h3 class="section-title">Championship Outlook Trend</h3>
+      <svg id="trendSvg" class="spark" viewBox="0 0 600 90" preserveAspectRatio="none"></svg>
+      <div id="trendText" class="small">No prior snapshot yet.</div>
+    </div>
+  </section>
+
+  <section id="about" class="panel">
+    <div class="card">
+      <h3 class="section-title">About the Model</h3>
+      <p class="ios-note"><strong>iPhone/iPad compatibility:</strong> open the hosted HTTPS link in Safari. Direct HTML attachments opened from Messages, Mail, or Files can be sandboxed by iOS and may not be allowed to retrieve live Sleeper data.</p>
+      <p class="small">Gridiron Gladiators Outlook simulates the remainder of the fantasy season using current standings, remaining schedule, league scoring, current rosters, bye weeks, broad player availability assumptions, and weekly scoring uncertainty. Rosters are assumed to remain unchanged while teams are assumed to make reasonable lineup substitutions using players already rostered.</p>
+      <p class="small">The shared version intentionally does not expose player-level projections, waiver advice, trade advice, opponent weaknesses, bench rankings, or other competitive scouting detail.</p>
+      <div class="status"><strong>Model:</strong> Share-safe Monte Carlo approximation. Probabilities are estimates, not certainty.</div>
+    </div>
+  </section>
+
+  <div class="footer">FFOPS P(Win) share edition • League 1391498560226205696 • No player-level scouting intelligence shown.</div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const LEAGUE_ID='1391498560226205696';
+const API='https://api.sleeper.app/v1';
+const IS_LOCAL_FILE = location.protocol === 'file:';
+function storageGet(key,fallback=null){try{const v=window.localStorage.getItem(key);return v===null?fallback:v;}catch(e){return fallback;}}
+function storageSet(key,val){try{window.localStorage.setItem(key,val);return true;}catch(e){return false;}}
+function safeParse(raw,fallback){try{return JSON.parse(raw)}catch(e){return fallback}}
+const SIMS=12000; // browser-safe default; enough for stable share snapshot
+const $=id=>document.getElementById(id);
+let state={league:null,users:[],rosters:[],teams:[],week:1,matchups:{},results:{},selected:null,schedule:[],snapshots:{}};
+
+function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+function pct(x){return Number.isFinite(x)?`${(x*100).toFixed(1)}%`:'—';}
+function seeded(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function hash(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function gauss(rand){let u=0,v=0;while(!u)u=rand();while(!v)v=rand();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+async function jget(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
+
+function teamLabel(user,roster){const meta=user?.metadata||{};return meta.team_name||user?.display_name||`Team ${roster.roster_id}`;}
+function mapTeams(){const byUser=Object.fromEntries(state.users.map(u=>[u.user_id,u]));state.teams=state.rosters.map(r=>({rosterId:r.roster_id,user:byUser[r.owner_id]||null,name:teamLabel(byUser[r.owner_id],r),record:r.settings||{},players:r.players||[],starters:r.starters||[],reserve:r.reserve||[]})).sort((a,b)=>a.name.localeCompare(b.name));}
+
+function populateTeams(){const sel=$('teamSelect');const prior=storageGet('ggo:selected');sel.innerHTML='';for(const t of state.teams){const o=document.createElement('option');o.value=t.rosterId;o.textContent=t.name;sel.appendChild(o);}let rid=Number(prior);if(!state.teams.some(t=>t.rosterId===rid))rid=state.teams[0]?.rosterId;sel.value=rid;state.selected=rid;sel.onchange=()=>{state.selected=Number(sel.value);storageSet('ggo:selected',sel.value);render();};}
+
+async function loadCore(){
+  $('statusLine').textContent='Refreshing Sleeper league data…';
+  const [league,users,rosters,nfl]=await Promise.all([
+    jget(`${API}/league/${LEAGUE_ID}`),jget(`${API}/league/${LEAGUE_ID}/users`),jget(`${API}/league/${LEAGUE_ID}/rosters`),jget(`${API}/state/nfl`)
+  ]);
+  state.league=league;state.users=users;state.rosters=rosters;state.week=Number(nfl.week||1);mapTeams();populateTeams();
+  $('weekBadge').textContent=`Week ${state.week}`;
+  await loadSchedule();
+}
+
+async function loadSchedule(){
+  const totalWeeks=Number(state.league?.settings?.playoff_week_start||15)-1;
+  const from=Math.max(1,state.week-1),to=Math.max(state.week,totalWeeks);
+  const weeks=[];for(let w=from;w<=to;w++)weeks.push(w);
+  const data=await Promise.all(weeks.map(w=>jget(`${API}/league/${LEAGUE_ID}/matchups/${w}`).catch(()=>[])));
+  state.matchups={};weeks.forEach((w,i)=>state.matchups[w]=data[i]);
+  buildPairings();
+}
+
+function buildPairings(){state.schedule=[];for(const [wstr,rows] of Object.entries(state.matchups)){const w=Number(wstr);const groups={};for(const r of rows){if(r.matchup_id==null)continue;(groups[r.matchup_id]??=[]).push(r);}for(const g of Object.values(groups)){if(g.length===2)state.schedule.push({week:w,a:g[0].roster_id,b:g[1].roster_id,pa:Number(g[0].points||0),pb:Number(g[1].points||0)});}}
+}
+
+function teamStats(t){return{wins:Number(t.record.wins||0),losses:Number(t.record.losses||0),ties:Number(t.record.ties||0),pf:Number(t.record.fpts||0)+Number(t.record.fpts_decimal||0)/100};}
+function currentPair(rid){return state.schedule.find(x=>x.week===state.week&&(x.a===rid||x.b===rid));}
+function oppName(pair,rid){if(!pair)return'—';const oid=pair.a===rid?pair.b:pair.a;return state.teams.find(t=>t.rosterId===oid)?.name||`Team ${oid}`;}
+
+// Share-safe forward strength estimate. Uses standings + points-for + roster depth count without exposing player-level data.
+function baseStrength(t){const s=teamStats(t);const games=Math.max(1,s.wins+s.losses+s.ties);const ppg=s.pf/games||100;const winRate=(s.wins+.5*s.ties)/games;const rosterDepth=clamp((t.players?.length||12)/16,.75,1.2);return 0.58*ppg+42*winRate+4*rosterDepth;}
+function allStrengths(){const vals=state.teams.map(baseStrength);const mean=vals.reduce((a,b)=>a+b,0)/vals.length;const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/Math.max(1,vals.length-1))||1;return new Map(state.teams.map((t,i)=>[t.rosterId,{raw:vals[i],z:(vals[i]-mean)/sd,mean,sd}]));}
+
+function simLeague(){
+  const strengths=allStrengths();
+  const playoffTeams=Number(state.league?.settings?.playoff_teams||6);
+  const regularEnd=Number(state.league?.settings?.playoff_week_start||15)-1;
+  const teams=state.teams;
+  const idx=new Map(teams.map((t,i)=>[t.rosterId,i]));
+  const n=teams.length;
+  const stats=teams.map(teamStats);
+  const playoff=Array(n).fill(0),final=Array(n).fill(0),title=Array(n).fill(0),seedSums=Array(n).fill(0),seedCounts=Array.from({length:n},()=>Array(n+1).fill(0)),winNow=Array(n).fill(0),expWins=Array(n).fill(0);
+  const rand=seeded(hash(`${LEAGUE_ID}:${state.week}:share-v1`));
+  const futurePairs=state.schedule.filter(x=>x.week>=state.week&&x.week<=regularEnd);
+  for(let sim=0;sim<SIMS;sim++){
+    const wins=stats.map(s=>s.wins),losses=stats.map(s=>s.losses),pf=stats.map(s=>s.pf);
+    const weekScores=new Map();
+    for(const p of futurePairs){
+      const ia=idx.get(p.a),ib=idx.get(p.b); if(ia==null||ib==null)continue;
+      const sa=strengths.get(p.a),sb=strengths.get(p.b);
+      const baseA=105+sa.z*10,baseB=105+sb.z*10;
+      const vola=18+Math.max(0,-sa.z)*2,volb=18+Math.max(0,-sb.z)*2;
+      const scoreA=Math.max(35,baseA+gauss(rand)*vola),scoreB=Math.max(35,baseB+gauss(rand)*volb);
+      pf[ia]+=scoreA;pf[ib]+=scoreB;
+      if(scoreA>scoreB){wins[ia]++;losses[ib]++;} else if(scoreB>scoreA){wins[ib]++;losses[ia]++;} else {wins[ia]+=.5;wins[ib]+=.5;}
+      if(p.week===state.week){weekScores.set(p.a,scoreA);weekScores.set(p.b,scoreB);if(scoreA>scoreB)winNow[ia]++;else if(scoreB>scoreA)winNow[ib]++;}
+    }
+    const order=[...Array(n).keys()].sort((i,j)=>wins[j]-wins[i]||pf[j]-pf[i]);
+    order.forEach((i,pos)=>{seedCounts[i][pos+1]++;seedSums[i]+=pos+1;expWins[i]+=wins[i];});
+    const field=order.slice(0,playoffTeams);field.forEach(i=>playoff[i]++);
+    // Generic seeded single-elimination approximation; byes go to top seeds as needed.
+    let alive=[...field];
+    while(alive.length>2){
+      const next=[];let start=0;
+      if(alive.length%2===1){next.push(alive[0]);start=1;}
+      for(let k=start;k<alive.length;k+=2){
+        if(k+1>=alive.length){next.push(alive[k]);continue;}
+        const i=alive[k],j=alive[k+1];const zi=strengths.get(teams[i].rosterId).z,zj=strengths.get(teams[j].rosterId).z;
+        const si=108+zi*10+gauss(rand)*19,sj=108+zj*10+gauss(rand)*19;next.push(si>=sj?i:j);
+      }
+      alive=next;
+    }
+    alive.forEach(i=>final[i]++);
+    if(alive.length===2){const i=alive[0],j=alive[1],zi=strengths.get(teams[i].rosterId).z,zj=strengths.get(teams[j].rosterId).z;const si=108+zi*10+gauss(rand)*20,sj=108+zj*10+gauss(rand)*20;title[si>=sj?i:j]++;}
+    else if(alive.length===1)title[alive[0]]++;
+  }
+  state.results={};teams.forEach((t,i)=>{state.results[t.rosterId]={pWin:winNow[i]/SIMS,pPlayoffs:playoff[i]/SIMS,pFinal:final[i]/SIMS,pTitle:title[i]/SIMS,expectedSeed:seedSums[i]/SIMS,seedDist:seedCounts[i].map(x=>x/SIMS),expectedWins:expWins[i]/SIMS};});
+}
+
+function outlookWord(p){if(p>=.75)return'Strong Position';if(p>=.55)return'Favorable Position';if(p>=.35)return'In the Mix';if(p>=.18)return'Bubble';return'Long Shot';}
+function scheduleWord(rid){const strengths=allStrengths();const opponents=state.schedule.filter(x=>x.week>state.week&&(x.a===rid||x.b===rid)).map(x=>x.a===rid?x.b:x.a).map(id=>strengths.get(id)?.z||0);if(!opponents.length)return'Average';const avg=opponents.reduce((a,b)=>a+b,0)/opponents.length;return avg>.35?'Challenging':avg<-.35?'Favorable':'Average';}
+function injuryWord(t){const count=(t.reserve||[]).length;return count>=3?'High':count>=1?'Moderate':'Low';}
+function driverText(t,r){const s=teamStats(t),arr=[];if(s.wins>s.losses)arr.push('• Current record provides a favorable base');else if(s.wins<s.losses)arr.push('• Current record leaves less margin for error');else arr.push('• Current record keeps the outlook balanced');const sw=scheduleWord(t.rosterId);arr.push(`• Remaining schedule rates ${sw.toLowerCase()}`);const iw=injuryWord(t);arr.push(`• Injury uncertainty is ${iw.toLowerCase()}`);return arr.join('<br>');}
+
+function saveSnapshot(){const key='ggo:snapshots';const all=safeParse(storageGet(key,'{}'),{});const stamp=`W${state.week}`;all[stamp]=all[stamp]||{};for(const t of state.teams){const r=state.results[t.rosterId];const s=teamStats(t);all[stamp][t.rosterId]={week:state.week,record:`${s.wins}-${s.losses}`,playoffs:r.pPlayoffs,final:r.pFinal,title:r.pTitle,expectedSeed:r.expectedSeed,ts:Date.now()};}storageSet(key,JSON.stringify(all));state.snapshots=all;}
+function loadSnapshots(){state.snapshots=safeParse(storageGet('ggo:snapshots','{}'),{});}
+
+function render(){const t=state.teams.find(x=>x.rosterId===state.selected);if(!t)return;const r=state.results[t.rosterId];const s=teamStats(t);$('teamName').textContent=t.name;$('teamRecord').textContent=`${s.wins}-${s.losses}${s.ties?`-${s.ties}`:''}`;$('pWin').textContent=pct(r?.pWin);$('pPlayoffs').textContent=pct(r?.pPlayoffs);$('pFinal').textContent=pct(r?.pFinal);$('pTitle').textContent=pct(r?.pTitle);const pair=currentPair(t.rosterId);$('oppLine').textContent=`vs ${oppName(pair,t.rosterId)}`;$('expectedSeed').textContent=r?`#${r.expectedSeed.toFixed(1)}`:'—';const gamesPlayed=s.wins+s.losses+s.ties;const regEnd=Number(state.league?.settings?.playoff_week_start||15)-1;const totalGames=Math.max(gamesPlayed,regEnd);$('projectedRecord').textContent=r?`${r.expectedWins.toFixed(1)} wins / ${totalGames} weeks`:'—';$('scheduleLabel').textContent=scheduleWord(t.rosterId);$('injuryLabel').textContent=injuryWord(t);$('outlookLabel').textContent=outlookWord(r?.pPlayoffs||0);$('drivers').innerHTML=driverText(t,r);$('statusLine').textContent=`Updated from Sleeper • ${SIMS.toLocaleString()} season simulations • share-safe output`;
+  renderSeeds(t,r);renderSchedule(t);renderLeague();renderTrend(t);
+}
+function renderSeeds(t,r){const box=$('seedBars');box.innerHTML='';if(!r)return;const maxSeed=state.teams.length;const playoffTeams=Number(state.league?.settings?.playoff_teams||6);for(let seed=1;seed<=Math.min(playoffTeams,6);seed++){const p=r.seedDist[seed]||0;box.insertAdjacentHTML('beforeend',`<div class="bar-row"><span>#${seed}</span><div class="bar"><span style="width:${(p*100).toFixed(1)}%"></span></div><strong>${(p*100).toFixed(1)}%</strong></div>`);}const miss=1-r.pPlayoffs;box.insertAdjacentHTML('beforeend',`<div class="bar-row"><span>Miss</span><div class="bar"><span style="width:${(miss*100).toFixed(1)}%"></span></div><strong>${(miss*100).toFixed(1)}%</strong></div>`);}
+function renderSchedule(t){const rows=state.schedule.filter(x=>x.week>=state.week&&(x.a===t.rosterId||x.b===t.rosterId)).sort((a,b)=>a.week-b.week);$('scheduleList').innerHTML=rows.length?rows.map(x=>`<div class="kv"><span>Week ${x.week}</span><strong>${oppName(x,t.rosterId)}</strong></div>`).join(''):'No remaining schedule data available.';}
+function renderLeague(){const tbody=$('leagueBody');tbody.innerHTML='';const arr=[...state.teams].sort((a,b)=>(state.results[b.rosterId]?.pTitle||0)-(state.results[a.rosterId]?.pTitle||0));for(const t of arr){const s=teamStats(t),r=state.results[t.rosterId];tbody.insertAdjacentHTML('beforeend',`<tr><td>${t.name}</td><td class="num">${s.wins}-${s.losses}</td><td class="num">${pct(r?.pPlayoffs)}</td><td class="num">${pct(r?.pTitle)}</td></tr>`);}}
+function renderTrend(t){const snaps=Object.values(state.snapshots).map(x=>x[t.rosterId]).filter(Boolean).sort((a,b)=>a.week-b.week);const svg=$('trendSvg');svg.innerHTML='';if(!snaps.length){$('trendText').textContent='No prior snapshot yet.';return;}const pts=snaps.map((s,i)=>[snaps.length===1?300:(i/(snaps.length-1))*580+10,80-(s.title*70)]);const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');svg.innerHTML=`<path d="${d}" fill="none" stroke="currentColor" stroke-width="4"/><line x1="10" y1="80" x2="590" y2="80" stroke="#334155" stroke-width="1"/>`;const first=snaps[0],last=snaps[snaps.length-1],delta=(last.title-first.title)*100;$('trendText').textContent=`Week ${first.week}: ${(first.title*100).toFixed(1)}% → Week ${last.week}: ${(last.title*100).toFixed(1)}% (${delta>=0?'+':''}${delta.toFixed(1)} pts)`;}
+
+function shareText(){const t=state.teams.find(x=>x.rosterId===state.selected),r=state.results[t.rosterId],s=teamStats(t);return `Gridiron Gladiators Outlook — Week ${state.week}\n\n${t.name}\nRecord: ${s.wins}-${s.losses}\nThis Week: ${pct(r.pWin)}\nMake Playoffs: ${pct(r.pPlayoffs)}\nReach Final: ${pct(r.pFinal)}\nWin League: ${pct(r.pTitle)}\nExpected Finish: #${r.expectedSeed.toFixed(1)}\n\nFFOPS P(Win) share edition`;}
+async function copyShare(){
+  const txt=shareText();
+  try{
+    if(navigator.share){
+      await navigator.share({title:'Gridiron Gladiators Outlook',text:txt});
+      return;
+    }
+  }catch(e){
+    if(e && e.name==='AbortError') return;
+  }
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(txt);
+      $('shareBtn').textContent='Copied';
+      setTimeout(()=>$('shareBtn').textContent='Share Outlook',1200);
+      return;
+    }
+  }catch(e){}
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');$('shareBtn').textContent='Copied';setTimeout(()=>$('shareBtn').textContent='Share Outlook',1200);}
+  catch(e){prompt('Copy outlook:',txt);}
+  finally{document.body.removeChild(ta);}
+}
+
+async function refresh(){
+  const banner=$('compatBanner');
+  if(IS_LOCAL_FILE){
+    banner.classList.add('show');
+    $('statusLine').innerHTML='<span class="danger">Live Outlook cannot reliably refresh from a locally opened HTML file on iPhone/iPad. Open the HTTPS-hosted version in Safari.</span>';
+    const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isiOS){
+      $('refreshBtn').disabled=true;
+      $('refreshBtn').textContent='Open Hosted Version';
+      return;
+    }
+  }else{
+    banner.classList.remove('show');
+  }
+  try{
+    $('refreshBtn').disabled=true;$('refreshBtn').textContent='Refreshing…';
+    await loadCore();loadSnapshots();simLeague();saveSnapshot();render();
+  }catch(e){
+    console.error(e);
+    $('statusLine').innerHTML=`<span class="danger">Outlook temporarily unavailable: ${e.message}. Confirm you have internet access and that this page was opened from an HTTPS web link.</span>`;
+  }finally{
+    if(!IS_LOCAL_FILE){
+      $('refreshBtn').disabled=false;$('refreshBtn').textContent='Refresh Outlook';
+    }else if(!/iPad|iPhone|iPod/.test(navigator.userAgent)){
+      $('refreshBtn').disabled=false;$('refreshBtn').textContent='Refresh Outlook';
+    }
+  }
+}
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active');});
+$('refreshBtn').onclick=refresh;$('shareBtn').onclick=copyShare;refresh();
+})();
+</script>
+</body>
+</html>
